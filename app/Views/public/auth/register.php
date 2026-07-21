@@ -1,0 +1,8 @@
+<?= $this->extend('layouts/public') ?><?= $this->section('contenido') ?><section class="customer-auth">
+    <div class="customer-card wide">
+        <p>Registro gratuito</p>
+        <h1>Crea tu cuenta</h1><span>Compra entradas y consúltalas cuando quieras.</span><?php if (session()->has('error')): ?><div class="public-alert"><?= esc(session('error')) ?></div><?php endif ?><?php $errors = session('errors') ?? []; ?><?php if ($errors): ?><div class="public-alert">
+                <ul><?php foreach ($errors as $error): ?><li><?= esc($error) ?></li><?php endforeach ?></ul>
+            </div><?php endif ?><form class="two-cols" action="<?= base_url('registro') ?>" method="post"><?= csrf_field() ?><label>Nombres<input name="nombres" required maxlength="100" value="<?= esc(old('nombres')) ?>"></label><label>Apellidos<input name="apellidos" required maxlength="100" value="<?= esc(old('apellidos')) ?>"></label><label>Correo<input type="email" name="email" required maxlength="190" value="<?= esc(old('email')) ?>"></label><label>Teléfono<input name="telefono" maxlength="25" value="<?= esc(old('telefono')) ?>"></label><label>Contraseña<input type="password" name="password" required minlength="10"></label><label>Confirmar contraseña<input type="password" name="password_confirm" required minlength="10"></label><small class="full">Mínimo 10 caracteres, mayúscula, minúscula, número y símbolo.</small><button class="full" type="submit">Crear cuenta</button></form><small>¿Ya tienes cuenta? <a href="<?= base_url('ingresar') ?>">Inicia sesión</a></small>
+    </div>
+</section><?= $this->endSection() ?>
