@@ -8,7 +8,6 @@ class Dashboard extends BaseController
 {
     public function index(): mixed
     {
-
         $usuario = session('usuario');
         if (($usuario['rol_slug'] ?? '') === 'vendedor') {
             return redirect()->to(base_url('admin/ventas/nueva'));
@@ -30,18 +29,4 @@ class Dashboard extends BaseController
             'eventos' => $dashboard->proximasFunciones(),
         ]);
     }
-    public function pruebaDesarrollo()
-    {
-
-        return $this->response->setJSON([
-
-            'estado' => 'ok',
-
-            'mensaje' => 'La rama desarrollo funciona correctamente',
-
-        ]);
-
-    }
-
-
 }
