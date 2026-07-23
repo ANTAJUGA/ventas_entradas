@@ -19,6 +19,7 @@ $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::authenticate');
 $routes->post('logout', 'Auth::logout');
 $routes->get('admin', 'Dashboard::index', ['filter' => 'adminAuth']);
+$routes->get('admin/ejemplo-malos-olores', 'Dashboard::reporteVentasConMalosOlores', ['filter' => 'adminAuth:administrador']);
 
 $routes->group('admin/ventas', ['filter' => 'adminAuth:administrador,vendedor'], static function (RouteCollection $routes): void {
     $routes->get('/', 'Admin\Ventas::index');
