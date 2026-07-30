@@ -98,31 +98,19 @@ class Artistas extends BaseController
             ->with('success', 'El artista fue actualizado.');
     }
 
-    // ==================================================================
-    // MAL OLOR 5: DEPENDENCIA CREADA DIRECTAMENTE
-    // Problema: el controlador decide siempre qué modelo concreto construir.
-    // ==================================================================
-    private function artistaModel(): ArtistaModel
+    // REFACTORIZACIÓN 5: INYECCIÓN DE DEPENDENCIA
+    // Permite proporcionar el modelo desde fuera y facilita las pruebas.
+    private ArtistaModel $artistaModel;
+
+    public function __construct(?ArtistaModel $artistaModel = null)
     {
-        return new ArtistaModel();
+        $this->artistaModel = $artistaModel ?? new ArtistaModel();
     }
 
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 5: INYECCIÓN DE DEPENDENCIA
-    // Elimina artistaModel() anterior y descomenta este bloque completo.
-    // Las demás funciones no necesitan cambios.
-    // ------------------------------------------------------------------
-    // private ArtistaModel $artistaModel;
-    //
-    // public function __construct(?ArtistaModel $artistaModel = null)
-    // {
-    //     $this->artistaModel = $artistaModel ?? new ArtistaModel();
-    // }
-    //
-    // private function artistaModel(): ArtistaModel
-    // {
-    //     return $this->artistaModel;
-    // }
+    private function artistaModel(): ArtistaModel
+    {
+        return $this->artistaModel;
+    }
 
     // ==================================================================
     // MAL OLOR 6: NÚMERO MÁGICO
