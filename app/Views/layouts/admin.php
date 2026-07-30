@@ -18,6 +18,7 @@
                     <a class="nav-link <?= $paginaActiva === 'dashboard' ? 'active' : '' ?>" href="<?= base_url('admin') ?>"><span>◦</span> Resumen</a>
                     <a class="nav-link <?= $paginaActiva === 'eventos' ? 'active' : '' ?>" href="<?= base_url('admin/eventos') ?>"><span>◫</span> Eventos</a>
                     <a class="nav-link <?= $paginaActiva === 'funciones' ? 'active' : '' ?>" href="<?= base_url('admin/funciones') ?>"><span>◷</span> Funciones</a>
+                    <a class="nav-link <?= $paginaActiva === 'artistas' ? 'active' : '' ?>" href="<?= base_url('admin/artistas') ?>"><span>★</span> Artistas</a>
                     <a class="nav-link <?= $paginaActiva === 'tipos_entrada' ? 'active' : '' ?>" href="<?= base_url('admin/tipos-entrada') ?>"><span>◇</span> Tipos de entrada</a>
                     <a class="nav-link <?= $paginaActiva === 'descuentos' ? 'active' : '' ?>" href="<?= base_url('admin/descuentos') ?>"><span>%</span> Descuentos</a>
                 <?php endif ?>

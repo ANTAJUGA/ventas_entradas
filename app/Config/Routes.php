@@ -19,6 +19,7 @@ $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::authenticate');
 $routes->post('logout', 'Auth::logout');
 $routes->get('admin', 'Dashboard::index', ['filter' => 'adminAuth']);
+$routes->get('admin/ejemplo-malos-olores', 'Dashboard::reporteVentasConMalosOlores', ['filter' => 'adminAuth:administrador']);
 
 $routes->group('admin/ventas', ['filter' => 'adminAuth:administrador,vendedor'], static function (RouteCollection $routes): void {
     $routes->get('/', 'Admin\Ventas::index');
@@ -53,6 +54,15 @@ $routes->group('admin/funciones', ['filter' => 'adminAuth:administrador,organiza
     $routes->post('(:num)/eliminar', 'Admin\Funciones::delete/$1');
     $routes->get('(:num)/tipos-entrada/nuevo', 'Admin\TiposEntrada::new/$1');
     $routes->post('(:num)/tipos-entrada', 'Admin\TiposEntrada::create/$1');
+});
+
+$routes->group('admin/artistas', ['filter' => 'adminAuth:administrador,organizador'], static function (RouteCollection $routes): void {
+    $routes->get('/', 'Admin\Artistas::index');
+    $routes->get('nuevo', 'Admin\Artistas::new');
+    $routes->post('/', 'Admin\Artistas::create');
+    $routes->get('(:num)/editar', 'Admin\Artistas::edit/$1');
+    $routes->post('(:num)', 'Admin\Artistas::update/$1');
+    $routes->post('(:num)/eliminar', 'Admin\Artistas::delete/$1');
 });
 
 $routes->group('admin/tipos-entrada', ['filter' => 'adminAuth:administrador,organizador'], static function (RouteCollection $routes): void {
