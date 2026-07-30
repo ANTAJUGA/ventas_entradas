@@ -112,37 +112,22 @@ class Artistas extends BaseController
         return $this->artistaModel;
     }
 
-    // ==================================================================
-    // MAL OLOR 6: NÚMERO MÁGICO
-    // Problema: 80 no explica qué limita y queda oculto dentro del método.
-    // ==================================================================
+    // REFACTORIZACIÓN 6: CONSTANTE CON NOMBRE
+    // Hace explícito el significado del límite utilizado en los resúmenes.
+    private const LIMITE_RESUMEN_DESCRIPCION = 80;
+
     private function resumirDescripcion(string $descripcion): string
     {
-        if (mb_strlen($descripcion) <= 80) {
+        if (mb_strlen($descripcion) <= self::LIMITE_RESUMEN_DESCRIPCION) {
             return $descripcion;
         }
 
-        return mb_substr($descripcion, 0, 80) . '…';
+        return mb_substr(
+            $descripcion,
+            0,
+            self::LIMITE_RESUMEN_DESCRIPCION,
+        ) . '…';
     }
-
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 6: CONSTANTE CON NOMBRE
-    // Elimina resumirDescripcion() anterior y descomenta el bloque completo.
-    // ------------------------------------------------------------------
-    // private const LIMITE_RESUMEN_DESCRIPCION = 80;
-    //
-    // private function resumirDescripcion(string $descripcion): string
-    // {
-    //     if (mb_strlen($descripcion) <= self::LIMITE_RESUMEN_DESCRIPCION) {
-    //         return $descripcion;
-    //     }
-    //
-    //     return mb_substr(
-    //         $descripcion,
-    //         0,
-    //         self::LIMITE_RESUMEN_DESCRIPCION,
-    //     ) . '…';
-    // }
 
     // ==================================================================
     // RESTO DEL CRUD: métodos de apoyo sin olores de la demostración.
