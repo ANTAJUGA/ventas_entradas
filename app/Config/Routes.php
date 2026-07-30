@@ -56,6 +56,15 @@ $routes->group('admin/funciones', ['filter' => 'adminAuth:administrador,organiza
     $routes->post('(:num)/tipos-entrada', 'Admin\TiposEntrada::create/$1');
 });
 
+$routes->group('admin/artistas', ['filter' => 'adminAuth:administrador,organizador'], static function (RouteCollection $routes): void {
+    $routes->get('/', 'Admin\Artistas::index');
+    $routes->get('nuevo', 'Admin\Artistas::new');
+    $routes->post('/', 'Admin\Artistas::create');
+    $routes->get('(:num)/editar', 'Admin\Artistas::edit/$1');
+    $routes->post('(:num)', 'Admin\Artistas::update/$1');
+    $routes->post('(:num)/eliminar', 'Admin\Artistas::delete/$1');
+});
+
 $routes->group('admin/tipos-entrada', ['filter' => 'adminAuth:administrador,organizador'], static function (RouteCollection $routes): void {
     $routes->get('/', 'Admin\TiposEntrada::index');
     $routes->get('(:num)/editar', 'Admin\TiposEntrada::edit/$1');
