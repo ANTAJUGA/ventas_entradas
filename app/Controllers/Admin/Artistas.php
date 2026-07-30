@@ -15,50 +15,26 @@ use CodeIgniter\HTTP\RedirectResponse;
  */
 class Artistas extends BaseController
 {
-    // ==================================================================
-    // MAL OLOR 1: NOMBRES MISTERIOSOS
-    // Problema: $x y $a no explican que representan artistas.
-    // ==================================================================
+    // REFACTORIZACIÓN 1: NOMBRES EXPRESIVOS
+    // Reemplaza nombres ambiguos por términos propios del dominio.
     public function index(): string
     {
-        $x = $this->artistaModel()
+        $artistas = $this->artistaModel()
             ->orderBy('created_at', 'DESC')
             ->findAll();
 
-        foreach ($x as &$a) {
-            $a['tipo_etiqueta'] = $this->tipoEtiqueta((string) $a['tipo']);
-            $a['descripcion_resumen'] = $this->resumirDescripcion((string) $a['descripcion']);
+        foreach ($artistas as &$artista) {
+            $artista['tipo_etiqueta'] = $this->tipoEtiqueta((string) $artista['tipo']);
+            $artista['descripcion_resumen'] =
+                $this->resumirDescripcion((string) $artista['descripcion']);
         }
-        unset($a);
+        unset($artista);
 
         return view('admin/artistas/index', $this->viewData([
             'titulo' => 'Artistas',
-            'artistas' => $x,
+            'artistas' => $artistas,
         ]));
     }
-
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 1: NOMBRES EXPRESIVOS
-    // Elimina el index() anterior y descomenta este index() completo.
-    // ------------------------------------------------------------------
-    // public function index(): string
-    // {
-    //     $artistas = $this->artistaModel()
-    //         ->orderBy('created_at', 'DESC')
-    //         ->findAll();
-    //
-    //     foreach ($artistas as &$artista) {
-    //         $artista['tipo_etiqueta'] = $this->tipoEtiqueta((string) $artista['tipo']);
-    //         $artista['descripcion_resumen'] =
-    //             $this->resumirDescripcion((string) $artista['descripcion']);
-    //     }
-    //     unset($artista);
-    //
-    //     return view('admin/artistas/index', $this->viewData([
-    //         'titulo' => 'Artistas',
-    //         'artistas' => $artistas,
-    //     ]));
-    // }
 
     // ==================================================================
     // MAL OLOR 2: CONDICIONAL LARGA
