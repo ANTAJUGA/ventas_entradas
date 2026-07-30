@@ -15,69 +15,92 @@ use CodeIgniter\HTTP\RedirectResponse;
  */
 class Artistas extends BaseController
 {
+    // ==================================================================
+    // MAL OLOR 1: NOMBRES MISTERIOSOS
+    // Problema: $x y $a no explican que representan artistas.
+    // ==================================================================
+    public function index(): string
+    {
+        $x = $this->artistaModel()
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
 
+        foreach ($x as &$a) {
+            $a['tipo_etiqueta'] = $this->tipoEtiqueta((string) $a['tipo']);
+            $a['descripcion_resumen'] = $this->resumirDescripcion((string) $a['descripcion']);
+        }
+        unset($a);
+
+        return view('admin/artistas/index', $this->viewData([
+            'titulo' => 'Artistas',
+            'artistas' => $x,
+        ]));
+    }
 
     // ------------------------------------------------------------------
     // REFACTORIZACIÓN 1: NOMBRES EXPRESIVOS
     // Elimina el index() anterior y descomenta este index() completo.
     // ------------------------------------------------------------------
-    public function index(): string
+    // public function index(): string
+    // {
+    //     $artistas = $this->artistaModel()
+    //         ->orderBy('created_at', 'DESC')
+    //         ->findAll();
+    //
+    //     foreach ($artistas as &$artista) {
+    //         $artista['tipo_etiqueta'] = $this->tipoEtiqueta((string) $artista['tipo']);
+    //         $artista['descripcion_resumen'] =
+    //             $this->resumirDescripcion((string) $artista['descripcion']);
+    //     }
+    //     unset($artista);
+    //
+    //     return view('admin/artistas/index', $this->viewData([
+    //         'titulo' => 'Artistas',
+    //         'artistas' => $artistas,
+    //     ]));
+    // }
+
+    // ==================================================================
+    // MAL OLOR 2: CONDICIONAL LARGA
+    // Problema: agregar un tipo obliga a añadir otro elseif.
+    // ==================================================================
+    private function tipoEtiqueta(string $tipo): string
     {
-        $artistas = $this->artistaModel()
-            ->orderBy('created_at', 'DESC')
-            ->findAll();
-
-        foreach ($artistas as &$artista) {
-            $artista['tipo_etiqueta'] = $this->tipoEtiqueta((string) $artista['tipo']);
-            $artista['descripcion_resumen'] =
-                $this->resumirDescripcion((string) $artista['descripcion']);
+        if ($tipo === 'solista') {
+            return 'Solista';
+        } elseif ($tipo === 'banda') {
+            return 'Banda';
+        } elseif ($tipo === 'duo') {
+            return 'Dúo';
+        } elseif ($tipo === 'orquesta') {
+            return 'Orquesta';
+        } else {
+            return 'Otro';
         }
-        unset($artista);
-
-        return view('admin/artistas/index', $this->viewData([
-            'titulo' => 'Artistas',
-            'artistas' => $artistas,
-        ]));
     }
-
 
     // ------------------------------------------------------------------
     // REFACTORIZACIÓN 2: EXPRESIÓN MATCH
     // Elimina tipoEtiqueta() anterior y descomenta este método completo.
     // ------------------------------------------------------------------
-    private function tipoEtiqueta(string $tipo): string
-    {
-        return match ($tipo) {
-            'solista' => 'Solista',
-            'banda' => 'Banda',
-            'duo' => 'Dúo',
-            'orquesta' => 'Orquesta',
-            default => 'Otro',
-        };
-    }
+    // private function tipoEtiqueta(string $tipo): string
+    // {
+    //     return match ($tipo) {
+    //         'solista' => 'Solista',
+    //         'banda' => 'Banda',
+    //         'duo' => 'Dúo',
+    //         'orquesta' => 'Orquesta',
+    //         default => 'Otro',
+    //     };
+    // }
 
-
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 3: EXTRAER MÉTODO
-    // Elimina create() anterior y descomenta estos dos métodos completos.
-    // ------------------------------------------------------------------
+    // ==================================================================
+    // MAL OLOR 3: MÉTODO LARGO
+    // Problema: create() lee la petición, arma datos, guarda y responde.
+    // ==================================================================
     public function create(): RedirectResponse
     {
-        $artistaModel = $this->artistaModel();
-
-        if (! $artistaModel->insert($this->datosFormulario())) {
-            return redirect()->back()
-                ->withInput()
-                ->with('errors', $artistaModel->errors());
-        }
-
-        return redirect()->to(base_url('admin/artistas'))
-            ->with('success', 'El artista fue creado.');
-    }
-
-    private function datosFormulario(): array
-    {
-        return [
+        $data = [
             'nombre_artistico' => trim((string) $this->request->getPost('nombre_artistico')),
             'nombre_real' => trim((string) $this->request->getPost('nombre_real')),
             'tipo' => trim((string) $this->request->getPost('tipo')),
@@ -87,19 +110,71 @@ class Artistas extends BaseController
             'imagen' => trim((string) $this->request->getPost('imagen')),
             'estado' => trim((string) $this->request->getPost('estado')),
         ];
+
+        $artistaModel = $this->artistaModel();
+
+        if (! $artistaModel->insert($data)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $artistaModel->errors());
+        }
+
+        return redirect()->to(base_url('admin/artistas'))
+            ->with('success', 'El artista fue creado.');
     }
 
+    // ------------------------------------------------------------------
+    // REFACTORIZACIÓN 3: EXTRAER MÉTODO
+    // Elimina create() anterior y descomenta estos dos métodos completos.
+    // ------------------------------------------------------------------
+    // public function create(): RedirectResponse
+    // {
+    //     $artistaModel = $this->artistaModel();
+    //
+    //     if (! $artistaModel->insert($this->datosFormulario())) {
+    //         return redirect()->back()
+    //             ->withInput()
+    //             ->with('errors', $artistaModel->errors());
+    //     }
+    //
+    //     return redirect()->to(base_url('admin/artistas'))
+    //         ->with('success', 'El artista fue creado.');
+    // }
+    //
+    // private function datosFormulario(): array
+    // {
+    //     return [
+    //         'nombre_artistico' => trim((string) $this->request->getPost('nombre_artistico')),
+    //         'nombre_real' => trim((string) $this->request->getPost('nombre_real')),
+    //         'tipo' => trim((string) $this->request->getPost('tipo')),
+    //         'genero' => trim((string) $this->request->getPost('genero')),
+    //         'pais' => trim((string) $this->request->getPost('pais')),
+    //         'descripcion' => trim((string) $this->request->getPost('descripcion')),
+    //         'imagen' => trim((string) $this->request->getPost('imagen')),
+    //         'estado' => trim((string) $this->request->getPost('estado')),
+    //     ];
+    // }
 
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 4: REUTILIZAR datosFormulario()
-    // Primero aplica la refactorización 3. Después elimina update()
-    // anterior y descomenta este update() completo.
-    // ------------------------------------------------------------------
+    // ==================================================================
+    // MAL OLOR 4: CÓDIGO DUPLICADO
+    // Problema: update() repite la construcción de datos de create().
+    // ==================================================================
     public function update(int $id): RedirectResponse
     {
         $this->findArtista($id);
-        $data = $this->datosFormulario();
-        $data['id'] = $id;
+
+        $data = [
+            'id' => $id,
+            'nombre_artistico' => trim((string) $this->request->getPost('nombre_artistico')),
+            'nombre_real' => trim((string) $this->request->getPost('nombre_real')),
+            'tipo' => trim((string) $this->request->getPost('tipo')),
+            'genero' => trim((string) $this->request->getPost('genero')),
+            'pais' => trim((string) $this->request->getPost('pais')),
+            'descripcion' => trim((string) $this->request->getPost('descripcion')),
+            'imagen' => trim((string) $this->request->getPost('imagen')),
+            'estado' => trim((string) $this->request->getPost('estado')),
+        ];
+
         $artistaModel = $this->artistaModel();
 
         if (! $artistaModel->update($id, $data)) {
@@ -112,43 +187,85 @@ class Artistas extends BaseController
             ->with('success', 'El artista fue actualizado.');
     }
 
+    // ------------------------------------------------------------------
+    // REFACTORIZACIÓN 4: REUTILIZAR datosFormulario()
+    // Primero aplica la refactorización 3. Después elimina update()
+    // anterior y descomenta este update() completo.
+    // ------------------------------------------------------------------
+    // public function update(int $id): RedirectResponse
+    // {
+    //     $this->findArtista($id);
+    //     $data = $this->datosFormulario();
+    //     $data['id'] = $id;
+    //     $artistaModel = $this->artistaModel();
+    //
+    //     if (! $artistaModel->update($id, $data)) {
+    //         return redirect()->back()
+    //             ->withInput()
+    //             ->with('errors', $artistaModel->errors());
+    //     }
+    //
+    //     return redirect()->to(base_url('admin/artistas'))
+    //         ->with('success', 'El artista fue actualizado.');
+    // }
+
+    // ==================================================================
+    // MAL OLOR 5: DEPENDENCIA CREADA DIRECTAMENTE
+    // Problema: el controlador decide siempre qué modelo concreto construir.
+    // ==================================================================
+    private function artistaModel(): ArtistaModel
+    {
+        return new ArtistaModel();
+    }
 
     // ------------------------------------------------------------------
     // REFACTORIZACIÓN 5: INYECCIÓN DE DEPENDENCIA
     // Elimina artistaModel() anterior y descomenta este bloque completo.
     // Las demás funciones no necesitan cambios.
     // ------------------------------------------------------------------
-    private ArtistaModel $artistaModel;
+    // private ArtistaModel $artistaModel;
+    //
+    // public function __construct(?ArtistaModel $artistaModel = null)
+    // {
+    //     $this->artistaModel = $artistaModel ?? new ArtistaModel();
+    // }
+    //
+    // private function artistaModel(): ArtistaModel
+    // {
+    //     return $this->artistaModel;
+    // }
 
-    public function __construct(?ArtistaModel $artistaModel = null)
+    // ==================================================================
+    // MAL OLOR 6: NÚMERO MÁGICO
+    // Problema: 80 no explica qué limita y queda oculto dentro del método.
+    // ==================================================================
+    private function resumirDescripcion(string $descripcion): string
     {
-        $this->artistaModel = $artistaModel ?? new ArtistaModel();
-    }
+        if (mb_strlen($descripcion) <= 80) {
+            return $descripcion;
+        }
 
-    private function artistaModel(): ArtistaModel
-    {
-        return $this->artistaModel;
+        return mb_substr($descripcion, 0, 80) . '…';
     }
-
 
     // ------------------------------------------------------------------
     // REFACTORIZACIÓN 6: CONSTANTE CON NOMBRE
     // Elimina resumirDescripcion() anterior y descomenta el bloque completo.
     // ------------------------------------------------------------------
-    private const LIMITE_RESUMEN_DESCRIPCION = 80;
-
-    private function resumirDescripcion(string $descripcion): string
-    {
-        if (mb_strlen($descripcion) <= self::LIMITE_RESUMEN_DESCRIPCION) {
-            return $descripcion;
-        }
-
-        return mb_substr(
-            $descripcion,
-            0,
-            self::LIMITE_RESUMEN_DESCRIPCION,
-        ) . '…';
-    }
+    // private const LIMITE_RESUMEN_DESCRIPCION = 80;
+    //
+    // private function resumirDescripcion(string $descripcion): string
+    // {
+    //     if (mb_strlen($descripcion) <= self::LIMITE_RESUMEN_DESCRIPCION) {
+    //         return $descripcion;
+    //     }
+    //
+    //     return mb_substr(
+    //         $descripcion,
+    //         0,
+    //         self::LIMITE_RESUMEN_DESCRIPCION,
+    //     ) . '…';
+    // }
 
     // ==================================================================
     // RESTO DEL CRUD: métodos de apoyo sin olores de la demostración.
