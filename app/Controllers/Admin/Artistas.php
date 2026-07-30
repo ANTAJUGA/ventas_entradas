@@ -49,26 +49,13 @@ class Artistas extends BaseController
         };
     }
 
-    // ==================================================================
-    // MAL OLOR 3: MÉTODO LARGO
-    // Problema: create() lee la petición, arma datos, guarda y responde.
-    // ==================================================================
+    // REFACTORIZACIÓN 3: EXTRAER MÉTODO
+    // Separa la captura de datos de la persistencia y la respuesta HTTP.
     public function create(): RedirectResponse
     {
-        $data = [
-            'nombre_artistico' => trim((string) $this->request->getPost('nombre_artistico')),
-            'nombre_real' => trim((string) $this->request->getPost('nombre_real')),
-            'tipo' => trim((string) $this->request->getPost('tipo')),
-            'genero' => trim((string) $this->request->getPost('genero')),
-            'pais' => trim((string) $this->request->getPost('pais')),
-            'descripcion' => trim((string) $this->request->getPost('descripcion')),
-            'imagen' => trim((string) $this->request->getPost('imagen')),
-            'estado' => trim((string) $this->request->getPost('estado')),
-        ];
-
         $artistaModel = $this->artistaModel();
 
-        if (! $artistaModel->insert($data)) {
+        if (! $artistaModel->insert($this->datosFormulario())) {
             return redirect()->back()
                 ->withInput()
                 ->with('errors', $artistaModel->errors());
@@ -78,37 +65,19 @@ class Artistas extends BaseController
             ->with('success', 'El artista fue creado.');
     }
 
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 3: EXTRAER MÉTODO
-    // Elimina create() anterior y descomenta estos dos métodos completos.
-    // ------------------------------------------------------------------
-    // public function create(): RedirectResponse
-    // {
-    //     $artistaModel = $this->artistaModel();
-    //
-    //     if (! $artistaModel->insert($this->datosFormulario())) {
-    //         return redirect()->back()
-    //             ->withInput()
-    //             ->with('errors', $artistaModel->errors());
-    //     }
-    //
-    //     return redirect()->to(base_url('admin/artistas'))
-    //         ->with('success', 'El artista fue creado.');
-    // }
-    //
-    // private function datosFormulario(): array
-    // {
-    //     return [
-    //         'nombre_artistico' => trim((string) $this->request->getPost('nombre_artistico')),
-    //         'nombre_real' => trim((string) $this->request->getPost('nombre_real')),
-    //         'tipo' => trim((string) $this->request->getPost('tipo')),
-    //         'genero' => trim((string) $this->request->getPost('genero')),
-    //         'pais' => trim((string) $this->request->getPost('pais')),
-    //         'descripcion' => trim((string) $this->request->getPost('descripcion')),
-    //         'imagen' => trim((string) $this->request->getPost('imagen')),
-    //         'estado' => trim((string) $this->request->getPost('estado')),
-    //     ];
-    // }
+    private function datosFormulario(): array
+    {
+        return [
+            'nombre_artistico' => trim((string) $this->request->getPost('nombre_artistico')),
+            'nombre_real' => trim((string) $this->request->getPost('nombre_real')),
+            'tipo' => trim((string) $this->request->getPost('tipo')),
+            'genero' => trim((string) $this->request->getPost('genero')),
+            'pais' => trim((string) $this->request->getPost('pais')),
+            'descripcion' => trim((string) $this->request->getPost('descripcion')),
+            'imagen' => trim((string) $this->request->getPost('imagen')),
+            'estado' => trim((string) $this->request->getPost('estado')),
+        ];
+    }
 
     // ==================================================================
     // MAL OLOR 4: CÓDIGO DUPLICADO
