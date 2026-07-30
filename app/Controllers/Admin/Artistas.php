@@ -79,26 +79,13 @@ class Artistas extends BaseController
         ];
     }
 
-    // ==================================================================
-    // MAL OLOR 4: CÓDIGO DUPLICADO
-    // Problema: update() repite la construcción de datos de create().
-    // ==================================================================
+    // REFACTORIZACIÓN 4: REUTILIZAR datosFormulario()
+    // Centraliza la normalización usada al crear y actualizar artistas.
     public function update(int $id): RedirectResponse
     {
         $this->findArtista($id);
-
-        $data = [
-            'id' => $id,
-            'nombre_artistico' => trim((string) $this->request->getPost('nombre_artistico')),
-            'nombre_real' => trim((string) $this->request->getPost('nombre_real')),
-            'tipo' => trim((string) $this->request->getPost('tipo')),
-            'genero' => trim((string) $this->request->getPost('genero')),
-            'pais' => trim((string) $this->request->getPost('pais')),
-            'descripcion' => trim((string) $this->request->getPost('descripcion')),
-            'imagen' => trim((string) $this->request->getPost('imagen')),
-            'estado' => trim((string) $this->request->getPost('estado')),
-        ];
-
+        $data = $this->datosFormulario();
+        $data['id'] = $id;
         $artistaModel = $this->artistaModel();
 
         if (! $artistaModel->update($id, $data)) {
@@ -110,28 +97,6 @@ class Artistas extends BaseController
         return redirect()->to(base_url('admin/artistas'))
             ->with('success', 'El artista fue actualizado.');
     }
-
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 4: REUTILIZAR datosFormulario()
-    // Primero aplica la refactorización 3. Después elimina update()
-    // anterior y descomenta este update() completo.
-    // ------------------------------------------------------------------
-    // public function update(int $id): RedirectResponse
-    // {
-    //     $this->findArtista($id);
-    //     $data = $this->datosFormulario();
-    //     $data['id'] = $id;
-    //     $artistaModel = $this->artistaModel();
-    //
-    //     if (! $artistaModel->update($id, $data)) {
-    //         return redirect()->back()
-    //             ->withInput()
-    //             ->with('errors', $artistaModel->errors());
-    //     }
-    //
-    //     return redirect()->to(base_url('admin/artistas'))
-    //         ->with('success', 'El artista fue actualizado.');
-    // }
 
     // ==================================================================
     // MAL OLOR 5: DEPENDENCIA CREADA DIRECTAMENTE
