@@ -36,39 +36,18 @@ class Artistas extends BaseController
         ]));
     }
 
-    // ==================================================================
-    // MAL OLOR 2: CONDICIONAL LARGA
-    // Problema: agregar un tipo obliga a añadir otro elseif.
-    // ==================================================================
+    // REFACTORIZACIÓN 2: EXPRESIÓN MATCH
+    // Expresa directamente la correspondencia entre tipo y etiqueta.
     private function tipoEtiqueta(string $tipo): string
     {
-        if ($tipo === 'solista') {
-            return 'Solista';
-        } elseif ($tipo === 'banda') {
-            return 'Banda';
-        } elseif ($tipo === 'duo') {
-            return 'Dúo';
-        } elseif ($tipo === 'orquesta') {
-            return 'Orquesta';
-        } else {
-            return 'Otro';
-        }
+        return match ($tipo) {
+            'solista' => 'Solista',
+            'banda' => 'Banda',
+            'duo' => 'Dúo',
+            'orquesta' => 'Orquesta',
+            default => 'Otro',
+        };
     }
-
-    // ------------------------------------------------------------------
-    // REFACTORIZACIÓN 2: EXPRESIÓN MATCH
-    // Elimina tipoEtiqueta() anterior y descomenta este método completo.
-    // ------------------------------------------------------------------
-    // private function tipoEtiqueta(string $tipo): string
-    // {
-    //     return match ($tipo) {
-    //         'solista' => 'Solista',
-    //         'banda' => 'Banda',
-    //         'duo' => 'Dúo',
-    //         'orquesta' => 'Orquesta',
-    //         default => 'Otro',
-    //     };
-    // }
 
     // ==================================================================
     // MAL OLOR 3: MÉTODO LARGO
